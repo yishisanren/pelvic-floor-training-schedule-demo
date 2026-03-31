@@ -234,7 +234,7 @@
     .screen-scroll {
       height: 100%;
       overflow: auto;
-      padding: calc(var(--safe-top) + 6px) 18px calc(var(--safe-bottom) + 132px);
+      padding: calc(var(--safe-top) + 6px) 18px calc(var(--safe-bottom) + 112px);
       scrollbar-width: none;
     }
 
@@ -498,11 +498,22 @@
 
     .bottom-cta {
       position: sticky;
-      bottom: -18px;
+      bottom: calc(var(--safe-bottom) * -1);
       z-index: 8;
       margin: 24px -18px calc(var(--safe-bottom) * -1);
-      padding: 28px 18px calc(var(--safe-bottom) + 10px);
-      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.96) 22%, #fff 46%);
+      padding: 18px 18px calc(var(--safe-bottom) + 4px);
+      background: #fff;
+    }
+
+    .bottom-cta::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -28px;
+      height: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.96) 72%, #fff);
+      pointer-events: none;
     }
 
     .btn-dark,
