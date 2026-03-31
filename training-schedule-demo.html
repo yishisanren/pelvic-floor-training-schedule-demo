@@ -2063,7 +2063,15 @@
       appScreen.querySelectorAll("[data-date]").forEach((node) => {
         node.addEventListener("click", () => {
           if (Date.now() - appState.justSwipedWeekAt < 220) return;
-          appState.selectedDate = node.dataset.date;
+          const dateStr = node.dataset.date;
+          const weekday = new Date(dateStr + "T00:00:00").getDay();
+          if (weekday === 0) {
+            appState.selectedDate = shiftDate(dateStr, -7);
+          } else if (weekday === 6) {
+            appState.selectedDate = shiftDate(dateStr, 7);
+          } else {
+            appState.selectedDate = dateStr;
+          }
           appState.holdAction = null;
           render();
         });
