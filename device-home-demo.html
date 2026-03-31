@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Megg 1 设备主页</title>
+  <style>
+    :root {
+      --bg-top: #fce5ea;
+      --bg-bottom: #f7f1f3;
+      --card: rgba(255, 255, 255, 0.92);
+      --line: rgba(108, 94, 100, 0.08);
+      --text: #4f474b;
+      --text-soft: #a59ca0;
+      --text-faint: #b8b0b4;
+      --pink: #ee8b98;
+      --pink-deep: #8d555f;
+      --pink-soft: #fdf0f2;
+      --pink-soft-2: #fff5f6;
+      --blue: #93bfcc;
+      --blue-deep: #6fa8b8;
+      --blue-soft: #eef7fa;
+      --rose-soft: #f8eef0;
+      --shadow: 0 18px 40px rgba(129, 107, 114, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 26px;
+      --radius-md: 22px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 195, 208, 0.38), transparent 34%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .phone-shell {
+      width: 100%;
+      max-width: 430px;
+      padding: 14px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
+      box-shadow: 0 30px 72px rgba(112, 94, 102, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .app {
+      min-height: calc(100vh - 48px);
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% -4%, rgba(255, 223, 230, 0.75), transparent 28%),
+        linear-gradient(180deg, #fcf8f9 0%, #f8f1f3 100%);
+      border: 1px solid rgba(255,255,255,0.76);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .icon {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px 14px;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-button {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #60595d;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .nav-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .content {
+      padding: 10px 20px 34px;
+    }
+
+    .device-zone {
+      padding: 8px 0 4px;
+    }
+
+    .device-product {
+      display: block;
+      width: min(100%, 320px);
+      height: auto;
+      margin: 0 auto;
+    }
+
+    .device-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 10px;
+      color: #8c8589;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .status-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      line-height: 1;
+    }
+
+    .status-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(116, 101, 107, 0.16);
+    }
+
+    .device-status .icon {
+      width: 20px;
+      height: 20px;
+      color: currentColor;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .battery-icon {
+      width: 21px;
+      height: 21px;
+      color: currentColor;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .section-label {
+      margin: 0 0 12px 6px;
+      color: var(--text-faint);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--pink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .text-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(108, 94, 100, 0.08);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #fff;
+      color: #9b9397;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 8px 18px rgba(129, 107, 114, 0.05);
+      text-decoration: none;
+    }
+
+    .plan-card {
+      padding: 20px 20px 12px;
+    }
+
+    .plan-title {
+      margin: 12px 0 0;
+      font-size: 82px;
+      line-height: 0.92;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+    }
+
+    .plan-list {
+      display: grid;
+      margin-top: 10px;
+    }
+
+    .plan-item {
+      width: 100%;
+      border: 0;
+      border-top: 1px solid rgba(108, 94, 100, 0.08);
+      padding: 14px 0;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .icon-badge.tone-blue {
+      background: var(--blue-soft);
+      color: var(--blue-deep);
+    }
+
+    .icon-badge.tone-pink {
+      background: var(--pink-soft);
+      color: var(--pink);
+    }
+
+    .icon-badge.tone-rose {
+      background: var(--rose-soft);
+      color: #b19ea3;
+    }
+
+    .plan-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .plan-copy strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .plan-copy span {
+      display: block;
+      margin-top: 5px;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .plan-tail {
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: stretch;
+      min-width: 28px;
+    }
+
+    .chevron {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mode-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mode-item {
+      width: 100%;
+      padding: 18px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .mode-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mode-copy strong {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .mode-copy span {
+      display: block;
+      margin-top: 5px;
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .game-card {
+      overflow: hidden;
+      padding: 0;
+      background: linear-gradient(135deg, #ffe1e7 0%, #fdf2f4 100%);
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 138px;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 28px 30px;
+      min-height: 180px;
+    }
+
+    .game-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 22px;
+      min-width: 0;
+    }
+
+    .game-copy h3 {
+      margin: 0;
+      max-width: none;
+      font-size: 23px;
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+      color: var(--pink-deep);
+      white-space: nowrap;
+    }
+
+    .game-button {
+      border: 0;
+      padding: 13px 30px;
+      border-radius: 999px;
+      background: #8d525d;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(141, 82, 93, 0.18);
+    }
+
+    .game-art {
+      width: 128px;
+      height: 100px;
+      justify-self: end;
+      align-self: center;
+    }
+
+    .metrics-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .metric-card {
+      padding: 22px 20px 20px;
+    }
+
+    .metric-card .card-header {
+      justify-content: flex-start;
+    }
+
+    .metric-title-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .metric-title-row.vertical {
+      gap: 12px;
+    }
+
+    .metric-title-row strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      margin-top: 18px;
+    }
+
+    .chart {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .assessment-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 118px;
+      gap: 14px;
+      align-items: center;
+      padding: 22px 20px;
+    }
+
+    .assessment-card h3 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 700;
+    }
+
+    .assessment-card p {
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .assessment-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      color: var(--pink);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .assessment-art {
+      width: 118px;
+      height: 118px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #fffafc 0%, #fff2f5 100%);
+      border: 1px solid rgba(108, 94, 100, 0.06);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    .assessment-art svg {
+      width: 86px;
+      height: 86px;
+    }
+
+    @media (max-width: 430px) {
+      body {
+        padding: 0;
+      }
+
+      .phone-shell {
+        max-width: none;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .app {
+        min-height: 100vh;
+        border-radius: 0;
+      }
+
+      .game-grid {
+        grid-template-columns: minmax(0, 1fr) 124px;
+        gap: 14px;
+        padding: 24px 22px 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-back" viewBox="0 0 24 24">
+      <path d="M15 5l-7 7 7 7"></path>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.2"></circle>
+      <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1.8 1.8 0 0 1 0 2.5 1.8 1.8 0 0 1-2.5 0l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V20a1.8 1.8 0 0 1-3.6 0v-.1a1 1 0 0 0-.7-.9 1 1 0 0 0-1.1.2l-.1.1a1.8 1.8 0 0 1-2.5 0 1.8 1.8 0 0 1 0-2.5l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4a1.8 1.8 0 0 1 0-3.6h.1a1 1 0 0 0 .9-.7 1 1 0 0 0-.2-1.1l-.1-.1a1.8 1.8 0 0 1 0-2.5 1.8 1.8 0 0 1 2.5 0l.1.1a1 1 0 0 0 1.1.2h.1a1 1 0 0 0 .6-.9V4a1.8 1.8 0 0 1 3.6 0v.1a1 1 0 0 0 .7.9 1 1 0 0 0 1.1-.2l.1-.1a1.8 1.8 0 0 1 2.5 0 1.8 1.8 0 0 1 0 2.5l-.1.1a1 1 0 0 0-.2 1.1v.1a1 1 0 0 0 .9.6H20a1.8 1.8 0 0 1 0 3.6h-.1a1 1 0 0 0-.9.7z"></path>
+    </symbol>
+    <symbol id="i-bluetooth" viewBox="0 0 24 24">
+      <path d="M12 3v18"></path>
+      <path d="M12 3l6 6-6 3"></path>
+      <path d="M12 21l6-6-6-3"></path>
+      <path d="M8 8.5l10 7"></path>
+      <path d="M8 15.5l10-7"></path>
+    </symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24">
+      <rect x="3.5" y="7.5" width="15.5" height="9" rx="2.3"></rect>
+      <path d="M20.5 10v4"></path>
+      <rect x="6.4" y="9.8" width="8.2" height="4.4" rx="1.2" fill="currentColor" stroke="none"></rect>
+    </symbol>
+    <symbol id="i-stim" viewBox="0 0 24 24">
+      <path d="M13 2L6 13h5l-1 9 8-12h-5l0-8z"></path>
+    </symbol>
+    <symbol id="i-ets" viewBox="0 0 24 24">
+      <path d="M3 13h4l2-4 3 8 3-6h6"></path>
+      <path d="M16 4l2 2-2 2"></path>
+    </symbol>
+    <symbol id="i-emg" viewBox="0 0 24 24">
+      <path d="M4 15V9"></path>
+      <path d="M9 17V7"></path>
+      <path d="M14 14V10"></path>
+      <path d="M19 16V8"></path>
+      <path d="M2.5 19.5h19"></path>
+    </symbol>
+    <symbol id="i-record-bars" viewBox="0 0 24 24">
+      <path d="M5 18V11"></path>
+      <path d="M10 18V7"></path>
+      <path d="M15 18V13"></path>
+      <path d="M20 18V5"></path>
+      <path d="M3 20h18"></path>
+    </symbol>
+    <symbol id="i-record-line" viewBox="0 0 24 24">
+      <path d="M4 16l4-4 4 2 4-6 4 3"></path>
+      <circle cx="4" cy="16" r="1.2"></circle>
+      <circle cx="8" cy="12" r="1.2"></circle>
+      <circle cx="12" cy="14" r="1.2"></circle>
+      <circle cx="16" cy="8" r="1.2"></circle>
+      <circle cx="20" cy="11" r="1.2"></circle>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="M9 5l7 7-7 7"></path>
+    </symbol>
+  </svg>
+
+  <div class="phone-shell">
+    <div class="app">
+      <header class="nav">
+        <div class="nav-left">
+          <button class="nav-button" type="button" data-action="back-device-list" aria-label="返回设备列表">
+            <svg class="icon" viewBox="0 0 24 24"><use href="#i-back"></use></svg>
+          </button>
+          <div class="nav-title">Megg 1</div>
+        </div>
+        <button class="nav-button" type="button" data-action="open-settings" aria-label="设置">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-settings"></use></svg>
+        </button>
+      </header>
+
+      <main class="content">
+        <section class="device-zone">
+          <svg class="device-product" viewBox="0 0 360 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="deviceBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff"></stop>
+                <stop offset="60%" stop-color="#f7f7f7"></stop>
+                <stop offset="100%" stop-color="#e6e2e5"></stop>
+              </linearGradient>
+              <linearGradient id="deviceProbe" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff"></stop>
+                <stop offset="100%" stop-color="#e9e6e8"></stop>
+              </linearGradient>
+              <linearGradient id="deviceButton" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#9cc5d2"></stop>
+                <stop offset="100%" stop-color="#7facb8"></stop>
+              </linearGradient>
+              <filter id="softShadow" x="-30%" y="-30%" width="160%" height="180%">
+                <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#000000" flood-opacity="0.12"></feDropShadow>
+              </filter>
+            </defs>
+
+            <ellipse cx="182" cy="195" rx="88" ry="16" fill="rgba(0,0,0,0.06)"></ellipse>
+            <g filter="url(#softShadow)" transform="translate(58 46) rotate(-8 125 65)">
+              <path d="M95 25c38-10 115-8 154 18 18 12 28 28 29 47 1 22-8 39-28 51-23 14-57 18-118 17-47-1-79-8-98-24-18-15-23-34-16-56 8-24 34-44 77-53z" fill="url(#deviceBody)"></path>
+              <path d="M131 28c31-6 93-4 125 18 12 8 19 19 21 33" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="9" stroke-linecap="round"></path>
+              <path d="M204 110c17 0 37-4 50-14 13-10 17-22 15-35" fill="none" stroke="rgba(180,172,176,0.22)" stroke-width="4.5" stroke-linecap="round"></path>
+              <path d="M57 90c3-8 9-14 18-16 17-4 38 9 48 27 4 8 5 17 1 24-4 7-13 12-23 13-17 1-39-14-46-30-3-5-3-12 2-18z" fill="url(#deviceProbe)"></path>
+              <path d="M38 115c2-9 7-15 15-18 14-5 31 4 41 18 5 7 7 16 5 23-3 9-12 16-22 17-15 2-34-8-40-23-3-5-3-11 1-17z" fill="url(#deviceProbe)"></path>
+              <path d="M58 95c14 3 28 15 34 28" fill="none" stroke="rgba(188,180,184,0.26)" stroke-width="3.5" stroke-linecap="round"></path>
+              <path d="M40 120c12 1 25 9 31 20" fill="none" stroke="rgba(188,180,184,0.24)" stroke-width="3.5" stroke-linecap="round"></path>
+              <ellipse cx="183" cy="44" rx="26" ry="13" fill="url(#deviceButton)"></ellipse>
+              <ellipse cx="183" cy="44" rx="10" ry="5" fill="rgba(93,96,103,0.42)"></ellipse>
+              <circle cx="127" cy="72" r="2.2" fill="rgba(195,191,194,0.9)"></circle>
+              <circle cx="136" cy="68" r="1.8" fill="rgba(210,206,209,0.85)"></circle>
+              <circle cx="145" cy="64" r="1.4" fill="rgba(222,217,220,0.85)"></circle>
+              <path d="M117 54h18" stroke="rgba(201,195,198,0.7)" stroke-width="2.8" stroke-linecap="round"></path>
+            </g>
+          </svg>
+
+          <div class="device-status">
+            <span class="status-item">
+              <svg class="icon" viewBox="0 0 24 24"><use href="#i-bluetooth"></use></svg>
+              <span>已连接</span>
+            </span>
+            <span class="status-divider"></span>
+            <span class="status-item">
+              <svg class="battery-icon" viewBox="0 0 24 24"><use href="#i-battery"></use></svg>
+              <span>67%</span>
+            </span>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="card plan-card">
+            <div class="card-header">
+              <div>
+                <p class="eyebrow">今日训练计划</p>
+                <h2 class="plan-title">3</h2>
+              </div>
+              <a class="text-button" href="./training-schedule-demo.html" data-action="open-all-schedules">全部日程</a>
+            </div>
+
+            <div class="plan-list">
+              <button class="plan-item" type="button" data-action="open-plan-stim">
+                <span class="icon-badge tone-blue">
+                  <svg class="icon" viewBox="0 0 24 24"><use href="#i-stim"></use></svg>
+                </span>
+                <span class="plan-copy">
+                  <strong>P01 电刺激治疗</strong>
+                  <span>09:30 · 24 分钟</span>
+                </span>
+                <span class="plan-tail">
+                  <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+                </span>
+              </button>
+
+              <button class="plan-item" type="button" data-action="open-plan-ets">
+                <span class="icon-badge tone-pink">
+                  <svg class="icon" viewBox="0 0 24 24"><use href="#i-ets"></use></svg>
+                </span>
+                <span class="plan-copy">
+                  <strong>P03 肌电触发电刺激</strong>
+                  <span>14:00 · 18 分钟</span>
+                </span>
+                <span class="plan-tail">
+                  <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+                </span>
+              </button>
+
+              <button class="plan-item" type="button" data-action="open-plan-emg">
+                <span class="icon-badge tone-rose">
+                  <svg class="icon" viewBox="0 0 24 24"><use href="#i-emg"></use></svg>
+                </span>
+                <span class="plan-copy">
+                  <strong>P05 肌电生物反馈治疗</strong>
+                  <span>20:00 · 20 分钟</span>
+                </span>
+                <span class="plan-tail">
+                  <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <p class="section-label">单次训练模式</p>
+          <div class="mode-list">
+            <button class="mode-item" type="button" data-action="open-stim-mode">
+              <span class="icon-badge tone-blue">
+                <svg class="icon" viewBox="0 0 24 24"><use href="#i-stim"></use></svg>
+              </span>
+              <span class="mode-copy">
+                <strong>电刺激治疗</strong>
+                <span>被动刺激盆底肌，适合放松和基础治疗场景</span>
+              </span>
+              <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+            </button>
+
+            <button class="mode-item" type="button" data-action="open-ets-mode">
+              <span class="icon-badge tone-pink">
+                <svg class="icon" viewBox="0 0 24 24"><use href="#i-ets"></use></svg>
+              </span>
+              <span class="mode-copy">
+                <strong>肌电触发电刺激</strong>
+                <span>达到阈值后自动刺激，帮助更快建立控制能力</span>
+              </span>
+              <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+            </button>
+
+            <button class="mode-item" type="button" data-action="open-emg-mode">
+              <span class="icon-badge tone-rose">
+                <svg class="icon" viewBox="0 0 24 24"><use href="#i-emg"></use></svg>
+              </span>
+              <span class="mode-copy">
+                <strong>肌电生物反馈治疗</strong>
+                <span>通过肌电曲线和反馈训练慢肌、快肌与耐力</span>
+              </span>
+              <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="card game-card">
+            <div class="game-grid">
+              <div class="game-copy">
+                <h3>趣味康复游戏</h3>
+                <button class="game-button" type="button" data-action="open-game">去玩耍</button>
+              </div>
+
+              <svg class="game-art" viewBox="0 0 156 118" aria-hidden="true">
+                <defs>
+                  <linearGradient id="gameSky" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#d5edf4"></stop>
+                    <stop offset="100%" stop-color="#f7fbfd"></stop>
+                  </linearGradient>
+                </defs>
+                <circle cx="82" cy="58" r="62" fill="rgba(255,255,255,0.56)"></circle>
+                <clipPath id="gameClip">
+                  <rect x="22" y="32" width="118" height="64" rx="18"></rect>
+                </clipPath>
+                <g clip-path="url(#gameClip)">
+                  <rect x="22" y="32" width="118" height="64" rx="18" fill="url(#gameSky)"></rect>
+                  <path d="M14 48c14-10 25-8 39 2 14 10 27 12 42 4 16-8 25-8 44 1v48H14z" fill="#b7d8e6"></path>
+                  <path d="M14 61c18-8 31-5 44 3 14 9 28 9 42 2 15-7 24-8 39-2v32H14z" fill="#a6cddd"></path>
+                  <rect x="54" y="76" width="52" height="10" rx="5" fill="#8db3bd"></rect>
+                  <path d="M98 70c8 2 14 6 18 12" stroke="#7aa4af" stroke-width="6" stroke-linecap="round"></path>
+                  <path d="M90 66c-8 6-15 8-24 8" stroke="#7aa4af" stroke-width="7" stroke-linecap="round"></path>
+                  <path d="M70 76c-8 2-13 6-18 11" stroke="#7aa4af" stroke-width="6" stroke-linecap="round"></path>
+                  <path d="M88 60c6 0 10 4 10 9 0 6-4 9-10 9-6 0-10-3-10-9 0-5 4-9 10-9z" fill="#f7d9d0"></path>
+                  <path d="M82 56c7-6 15-6 19-1" stroke="#4f474b" stroke-width="3.5" stroke-linecap="round"></path>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="metrics-stack">
+            <div class="card metric-card">
+              <div class="card-header">
+                <div class="metric-title-row vertical">
+                  <span class="icon-badge tone-pink">
+                    <svg class="icon" viewBox="0 0 24 24"><use href="#i-record-bars"></use></svg>
+                  </span>
+                  <strong>最近训练记录</strong>
+                </div>
+              </div>
+
+              <div class="metric-body">
+                <svg class="chart" viewBox="0 0 280 122" aria-hidden="true">
+                  <line x1="20" y1="24" x2="260" y2="24" stroke="#f2ecef" stroke-width="1"></line>
+                  <line x1="20" y1="52" x2="260" y2="52" stroke="#f2ecef" stroke-width="1"></line>
+                  <line x1="20" y1="80" x2="260" y2="80" stroke="#f2ecef" stroke-width="1"></line>
+                  <line x1="20" y1="104" x2="260" y2="104" stroke="#eee6e9" stroke-width="1"></line>
+
+                  <rect x="34" y="58" width="12" height="46" rx="6" fill="#f6dfe4"></rect>
+                  <rect x="68" y="48" width="12" height="56" rx="6" fill="#f3d4db"></rect>
+                  <rect x="102" y="66" width="12" height="38" rx="6" fill="#f6e4e8"></rect>
+                  <rect x="136" y="28" width="12" height="76" rx="6" fill="#efc1cb"></rect>
+                  <rect x="170" y="40" width="12" height="64" rx="6" fill="#f0ccd3"></rect>
+                  <rect x="204" y="52" width="12" height="52" rx="6" fill="#f3d9de"></rect>
+                  <rect x="238" y="18" width="12" height="86" rx="6" fill="#e68695"></rect>
+
+                  <text x="40" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">1</text>
+                  <text x="74" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">2</text>
+                  <text x="108" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">3</text>
+                  <text x="142" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">4</text>
+                  <text x="176" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">5</text>
+                  <text x="210" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">6</text>
+                  <text x="244" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">7</text>
+                </svg>
+              </div>
+            </div>
+
+            <div class="card metric-card">
+              <div class="card-header">
+                <div class="metric-title-row">
+                  <span class="icon-badge tone-blue">
+                    <svg class="icon" viewBox="0 0 24 24"><use href="#i-record-line"></use></svg>
+                  </span>
+                  <strong>最近分数记录</strong>
+                </div>
+              </div>
+
+              <div class="metric-body">
+                <svg class="chart" viewBox="0 0 280 122" aria-hidden="true">
+                  <line x1="20" y1="24" x2="260" y2="24" stroke="#eef2f4" stroke-width="1"></line>
+                  <line x1="20" y1="52" x2="260" y2="52" stroke="#eef2f4" stroke-width="1"></line>
+                  <line x1="20" y1="80" x2="260" y2="80" stroke="#eef2f4" stroke-width="1"></line>
+                  <line x1="20" y1="104" x2="260" y2="104" stroke="#e8eef1" stroke-width="1"></line>
+
+                  <path d="M30 84 C46 79, 52 74, 64 67 C76 59, 84 49, 98 42 C110 36, 118 28, 132 24 C146 20, 154 11, 166 10 C178 9, 188 13, 200 19 C214 26, 224 18, 238 11" fill="none" stroke="#9cbfcb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+
+                  <circle cx="30" cy="84" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="64" cy="67" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="98" cy="42" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="132" cy="24" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="166" cy="10" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="200" cy="19" r="6" fill="#ffffff" stroke="#d5dfe3" stroke-width="3"></circle>
+                  <circle cx="238" cy="11" r="7" fill="#ffffff" stroke="#9cbfcb" stroke-width="4"></circle>
+
+                  <text x="30" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">1</text>
+                  <text x="64" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">2</text>
+                  <text x="98" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">3</text>
+                  <text x="132" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">4</text>
+                  <text x="166" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">5</text>
+                  <text x="200" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">6</text>
+                  <text x="238" y="118" text-anchor="middle" font-size="9" fill="#b8b0b4">7</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="card assessment-card">
+            <div>
+              <h3>盆底评估</h3>
+              <p>全面分析静息、力量、耐力与恢复表现，建立更清晰的训练依据。</p>
+              <a class="assessment-link" href="javascript:void(0)" data-action="start-assessment">
+                <span>立即评估</span>
+                <svg class="chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+              </a>
+            </div>
+
+            <div class="assessment-art" aria-hidden="true">
+              <svg viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="pelvicStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#9bc1cf"></stop>
+                    <stop offset="100%" stop-color="#88b2c1"></stop>
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="34" fill="#ffffff"></circle>
+                <path d="M50 22c10 6 15 15 15 25 0 10-6 17-15 23-9-6-15-13-15-23 0-10 5-19 15-25z" fill="none" stroke="url(#pelvicStroke)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M32 38c-6 2-11 8-12 15 8 0 15-2 20-7" fill="none" stroke="#9bc1cf" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M68 38c6 2 11 8 12 15-8 0-15-2-20-7" fill="none" stroke="#9bc1cf" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M39 64c3 7 7 11 11 14 4-3 8-7 11-14" fill="none" stroke="#ea9aa7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M50 30v34" fill="none" stroke="#ea9aa7" stroke-width="3" stroke-linecap="round"></path>
+                <path d="M45 47c2 3 4 4 5 4 1 0 3-1 5-4" fill="none" stroke="#ea9aa7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
