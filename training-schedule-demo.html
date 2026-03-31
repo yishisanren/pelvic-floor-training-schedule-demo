@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Schedule Demo</title>
+  <style>
+    :root {
+      --bg: linear-gradient(180deg, #fff8fa 0%, #f5eef1 100%);
+      --ink: #252830;
+      --ink-soft: #8f8d96;
+      --line: rgba(37, 40, 48, 0.08);
+      --pink: #ef6f87;
+      --pink-soft: #fdecef;
+      --pink-soft-2: #fff4f6;
+      --charcoal: #383a40;
+      --gray-card: #f8f7f8;
+      --green: #52b85b;
+      --green-soft: #edf9ee;
+      --yellow: #fff4cf;
+      --yellow-ink: #a2761f;
+      --shadow: 0 24px 60px rgba(31, 26, 34, 0.14);
+      --phone-w: 390px;
+      --phone-h: 844px;
+      --safe-top: 56px;
+      --safe-bottom: 34px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at left top, rgba(255, 201, 214, 0.28), transparent 32%),
+        radial-gradient(circle at right top, rgba(255, 244, 246, 0.98), transparent 46%),
+        var(--bg);
+      color: var(--ink);
+      font-family: inherit;
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 28px;
+      align-items: start;
+      min-height: calc(100vh - 48px);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      padding: 24px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--pink-soft);
+      color: var(--pink);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .sidebar h1 {
+      margin: 16px 0 10px;
+      font-size: 32px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .sidebar p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 20px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(37, 40, 48, 0.06);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sidebar h2 {
+      margin: 18px 0 10px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-button {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      transform: translateY(-1px);
+      background: #fff;
+      border-color: rgba(239, 111, 135, 0.16);
+    }
+
+    .caption {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .stage {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 24px;
+    }
+
+    .phone-wrap {
+      padding: 24px;
+      border-radius: 48px;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.48)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.16));
+      box-shadow: 0 42px 90px rgba(42, 34, 40, 0.14);
+      backdrop-filter: blur(18px);
+    }
+
+    .phone {
+      position: relative;
+      width: var(--phone-w);
+      height: var(--phone-h);
+      padding: 12px;
+      border-radius: 54px;
+      background: linear-gradient(180deg, #1e2128 0%, #101318 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 32px 90px rgba(0, 0, 0, 0.36);
+    }
+
+    .phone-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 42px;
+      background: #fff;
+    }
+
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 124px;
+      height: 34px;
+      border-radius: 999px;
+      background: #0b0d12;
+      z-index: 40;
+    }
+
+    .statusbar {
+      position: absolute;
+      top: 18px;
+      left: 22px;
+      right: 22px;
+      z-index: 41;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .status-right {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #fff7f9 0%, #fff 32%);
+    }
+
+    .screen-scroll {
+      height: 100%;
+      overflow: auto;
+      padding: calc(var(--safe-top) + 6px) 18px calc(var(--safe-bottom) + 132px);
+      scrollbar-width: none;
+    }
+
+    .screen-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .nav-center {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-btn {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: var(--ink);
+      font: inherit;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .nav-btn.text-action {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--pink);
+      letter-spacing: 0;
+    }
+
+    .card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(35, 29, 35, 0.05);
+    }
+
+    .calendar-head,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .calendar-wrap {
+      position: relative;
+      touch-action: pan-y;
+    }
+
+    .calendar-head {
+      margin-top: 16px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .calendar-day {
+      position: relative;
+      padding-top: 2px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .calendar-day.past {
+      color: #c1bcc2;
+    }
+
+    .calendar-day.selected .day-pill {
+      background: var(--charcoal);
+      color: #fff;
+    }
+
+    .calendar-day.today.selected .day-pill {
+      background: var(--pink);
+    }
+
+    .day-pill {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+    }
+
+    .day-dots {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 4px;
+      min-height: 6px;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #d7d1d5;
+    }
+
+    .date-title {
+      margin: 18px 0 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #474953;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task-card {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 24px rgba(38, 31, 39, 0.05);
+      cursor: pointer;
+    }
+
+    .task-card.completed,
+    .task-card.missed,
+    .task-card.archived {
+      opacity: 0.58;
+    }
+
+    .task-card.completed .task-title,
+    .task-card.missed .task-title,
+    .task-card.archived .task-title,
+    .task-card.skipped .task-title {
+      color: #96949c;
+    }
+
+    .task-card.completed .task-sub,
+    .task-card.missed .task-sub,
+    .task-card.archived .task-sub,
+    .task-card.skipped .task-sub {
+      color: #b0aeb5;
+    }
+
+    .task-color {
+      width: 4px;
+      border-radius: 999px;
+      min-height: 46px;
+      flex-shrink: 0;
+    }
+
+    .task-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .task-sub {
+      display: block;
+      margin-top: 4px;
+      color: #9998a1;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .task-trailing {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      min-width: 48px;
+    }
+
+    .status-badge {
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: var(--pink-soft);
+      color: var(--pink);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .status-badge.completed {
+      background: #eef7ef;
+      color: var(--green);
+    }
+
+    .status-badge.missed,
+    .status-badge.archived,
+    .status-badge.skipped {
+      background: #f1eff2;
+      color: #93919a;
+    }
+
+    .status-icon {
+      color: #bbbbc2;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .floating-pill {
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 16px 28px rgba(239, 111, 135, 0.26);
+      z-index: 4;
+      cursor: pointer;
+    }
+
+    .floating-pill.delete {
+      background: var(--charcoal);
+      box-shadow: 0 16px 28px rgba(56, 58, 64, 0.22);
+    }
+
+    .helper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #aba8b0;
+    }
+
+    .helper::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid #d8d4d8;
+    }
+
+    .bottom-cta {
+      position: sticky;
+      bottom: -18px;
+      z-index: 8;
+      margin: 24px -18px calc(var(--safe-bottom) * -1);
+      padding: 28px 18px calc(var(--safe-bottom) + 10px);
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.96) 22%, #fff 46%);
+    }
+
+    .btn-dark,
+    .btn-pink,
+    .btn-white,
+    .btn-green {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 16px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .btn-dark:hover,
+    .btn-pink:hover,
+    .btn-white:hover,
+    .btn-green:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-dark {
+      background: var(--charcoal);
+      color: #fff;
+    }
+
+    .btn-dark[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-pink {
+      background: var(--pink);
+      color: #fff;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: #9c9aa3;
+      border: 1px solid var(--line);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 6px 0 14px;
+    }
+
+    .step {
+      height: 6px;
+      border-radius: 999px;
+      background: #f0eaed;
+      overflow: hidden;
+    }
+
+    .step.active::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--pink);
+    }
+
+    .field-group + .field-group {
+      margin-top: 12px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6e6f77;
+    }
+
+    .field-copy {
+      display: block;
+      margin-top: 4px;
+      color: #b4b2bb;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .month-week-head {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .month-week-head span {
+      font-size: 11px;
+      font-weight: 800;
+      color: #b6b3bb;
+    }
+
+    .date-chip {
+      min-height: 58px;
+      padding: 8px 0 7px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .date-chip small {
+      display: block;
+      min-height: 8px;
+      color: #c0bcc4;
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .date-chip small.placeholder {
+      visibility: hidden;
+    }
+
+    .date-chip strong {
+      display: block;
+      margin-top: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.05;
+    }
+
+    .date-chip.selected {
+      background: var(--pink-soft-2);
+      border-color: rgba(239, 111, 135, 0.26);
+    }
+
+    .date-chip.disabled {
+      background: #fbfafb;
+      cursor: default;
+    }
+
+    .date-chip.disabled strong {
+      color: #c3bec5;
+    }
+
+    .select-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .select-copy {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .select-copy strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .select-copy span {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #b0aeb5;
+      line-height: 1.4;
+    }
+
+    .locked {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .wheel {
+      position: relative;
+      margin-top: 12px;
+      padding: 16px 0;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(249,248,249,0.94));
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .wheel::before,
+    .wheel::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      height: 1px;
+      background: rgba(37,40,48,0.08);
+    }
+
+    .wheel::before {
+      top: 22px;
+    }
+
+    .wheel::after {
+      bottom: 22px;
+    }
+
+    .wheel-row {
+      font-size: 12px;
+      color: #b6b4bc;
+      line-height: 1.7;
+    }
+
+    .wheel-row.active {
+      font-size: 16px;
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding: 12px 0 0;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: #dad8de;
+      cursor: pointer;
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 8px 14px rgba(18, 24, 35, 0.12);
+      transition: transform 160ms ease;
+    }
+
+    .toggle.on {
+      background: var(--pink);
+    }
+
+    .toggle.on::after {
+      transform: translateX(20px);
+    }
+
+    .week-section + .week-section {
+      margin-top: 12px;
+    }
+
+    .week-title {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #96949c;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .summary-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .summary-card + .summary-card {
+      margin-top: 8px;
+    }
+
+    .edit-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      color: #81818a;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: absolute;
+      top: calc(var(--safe-top) + 8px);
+      left: 18px;
+      right: 18px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 18px 32px rgba(34, 28, 34, 0.12);
+      z-index: 20;
+    }
+
+    .toast.inline {
+      position: static;
+      margin: 10px 0 0;
+      box-shadow: 0 10px 24px rgba(34, 28, 34, 0.08);
+    }
+
+    .toast.pink {
+      background: #fdecef;
+      color: #d06a80;
+    }
+
+    .toast.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .toast.yellow {
+      background: var(--yellow);
+      color: var(--yellow-ink);
+    }
+
+    .empty {
+      min-height: 360px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .empty-art {
+      width: 120px;
+      height: 120px;
+      border-radius: 36px;
+      background: linear-gradient(135deg, rgba(239,111,135,0.12), rgba(255,244,246,0.9));
+      border: 1px solid rgba(239,111,135,0.08);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(39, 39, 44, 0.32);
+      backdrop-filter: blur(10px);
+      z-index: 30;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 14px 14px;
+    }
+
+    .overlay.center {
+      align-items: center;
+      padding: 24px;
+    }
+
+    .sheet,
+    .dialog {
+      width: 100%;
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 26px 60px rgba(35, 29, 35, 0.22);
+    }
+
+    .sheet {
+      padding: 12px;
+    }
+
+    .sheet-handle {
+      width: 38px;
+      height: 5px;
+      margin: 4px auto 14px;
+      border-radius: 999px;
+      background: #d8d7dc;
+    }
+
+    .dialog {
+      max-width: 300px;
+      padding: 18px 16px 14px;
+      text-align: center;
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: var(--pink-soft);
+      display: grid;
+      place-items: center;
+      color: var(--pink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .dialog-icon.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .dialog h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    .dialog p {
+      margin: 10px 0 0;
+      color: #9d9ca4;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .mode-option {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .mode-option.active {
+      border-color: rgba(239, 111, 135, 0.26);
+      background: var(--pink-soft-2);
+    }
+
+    .mode-option .status-badge {
+      margin-left: auto;
+    }
+
+    .sheet-title {
+      margin: 0 0 12px;
+      padding-left: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-align: left;
+    }
+
+    .progress {
+      width: 100%;
+      height: 6px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: #efebee;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      background: var(--pink);
+      border-radius: inherit;
+    }
+
+    .celebrate {
+      min-height: 220px;
+      padding: 24px 18px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(239,111,135,0.16), transparent 16%),
+        radial-gradient(circle at 82% 18%, rgba(255,208,128,0.26), transparent 18%),
+        radial-gradient(circle at 52% 12%, rgba(82,184,91,0.18), transparent 18%),
+        linear-gradient(180deg, #fff5f7 0%, #fff 70%);
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .celebrate-icon {
+      width: 94px;
+      height: 94px;
+      margin: 0 auto 14px;
+      border-radius: 32px;
+      background: linear-gradient(135deg, rgba(239,111,135,0.16), rgba(255,219,185,0.26));
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      color: var(--pink);
+    }
+
+    .celebrate h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.05em;
+    }
+
+    .celebrate p {
+      margin: 10px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #8f8d95;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      letter-spacing: -0.05em;
+    }
+
+    .stat span {
+      font-size: 11px;
+      color: #9e9ca5;
+      font-weight: 700;
+    }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 132px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(16, 20, 28, 0.18);
+      z-index: 45;
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        padding: 16px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="eyebrow">Updated Spec</div>
+      <h1>Training Schedule</h1>
+      <p>这版按你最新给出的训练日程管理说明重做：4 周完整日期选择、多任务跳过范围、撤销请假、编辑与删除、续期与完成引导都按新内容执行，旧稿里的 Reschedule / Rest Day 逻辑已移除。</p>
+
+      <div class="chip-row">
+        <span class="chip">4 周日程</span>
+        <span class="chip">Pending / Skipped / Completed</span>
+        <span class="chip">Missed / Archived</span>
+        <span class="chip">Skip Scope</span>
+        <span class="chip">Restore</span>
+        <span class="chip">Continue 4 Weeks</span>
+      </div>
+
+      <h2>页面导航</h2>
+      <div class="nav-list" id="nav-list">
+        <button class="nav-button active" data-nav="home">Training schedule</button>
+        <button class="nav-button" data-nav="add">Add activity</button>
+        <button class="nav-button" data-nav="confirm">Your schedule</button>
+        <button class="nav-button" data-nav="allSchedules">All Schedules</button>
+        <button class="nav-button" data-nav="edit">Edit schedule</button>
+        <button class="nav-button" data-nav="complete">Completion</button>
+      </div>
+
+      <h2>快捷场景</h2>
+      <div class="nav-list">
+        <button class="nav-button" data-scene="reminder">Reminder popup</button>
+        <button class="nav-button" data-scene="encourage">We miss you</button>
+        <button class="nav-button" data-scene="lastSession">Last session</button>
+        <button class="nav-button" data-scene="empty">Empty state</button>
+      </div>
+
+      <div class="caption" id="caption">
+        当前页面：Training schedule。长按 `Pending` 任务卡片 0.5 秒会出现 `Rest` 浮层按钮；All Schedules 点击卡片进入编辑，删除入口在编辑页右上角。
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="dynamic-island"></div>
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="status-right"><span>5G</span><span>◔◔◔</span><span>▮</span></span>
+            </div>
+            <div class="screen" id="app-screen"></div>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const appScreen = document.getElementById("app-screen");
+    const caption = document.getElementById("caption");
+    const navButtons = document.querySelectorAll("[data-nav]");
+
+    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const shortWeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const MODE_OPTIONS = [
+      { id: "p01", name: "P01 Urge Incontinence", desc: "Inhibits bladder overactivity", duration: "30 min" },
+      { id: "p02", name: "P02 Stress Incontinence Beginner", desc: "Gentle strengthening for pelvic floor", duration: "20 min" },
+      { id: "p03", name: "P03 Stress Incontinence Advanced", desc: "Advanced strength and response training", duration: "20 min" },
+      { id: "p04", name: "P04 Mixed Incontinence", desc: "Combined strengthening and inhibition", duration: "25 min" },
+      { id: "p05", name: "P05 Functional Training", desc: "Daily maintenance and endurance", duration: "28 min" },
+      { id: "p06", name: "P06 Sensitivity Mode", desc: "Improve sensitivity and response", duration: "4 min" }
+    ];
+
+    const COLORS = ["#ef6f87", "#f3b45b", "#7bb8ff", "#72c6b3", "#c193ff", "#8d8df2"];
+
+    const appState = {
+      view: "home",
+      overlay: null,
+      selectedDate: "2025-12-08",
+      today: "2025-12-08",
+      toast: null,
+      holdAction: null,
+      selectedTaskId: null,
+      noReminder: false,
+      selectedReminder: "09:00 AM",
+      addSelectedDates: new Set(),
+      addSelectedMode: null,
+      editScheduleId: null,
+      lastOpenedFrom: "home",
+      justSwipedWeekAt: 0,
+      skipStreak: { s1: 0, s2: 0 },
+      allSchedulesDeleted: false,
+      activeSchedules: [
+        {
+          id: "s1",
+          modeId: "p01",
+          modeName: "P01 Urge Incontinence",
+          desc: "Inhibits bladder overactivity",
+          duration: "30 min",
+          reminder: "09:00 AM",
+          dates: ["2025-12-08", "2025-12-10", "2025-12-12", "2025-12-15", "2025-12-17", "2025-12-19", "2025-12-22", "2025-12-24", "2025-12-26", "2025-12-29", "2025-12-31", "2026-01-02"],
+          color: COLORS[0],
+          progress: { done: 8, total: 12 },
+          period: "Dec 08, 2025 - Jan 04, 2026"
+        },
+        {
+          id: "s2",
+          modeId: "p02",
+          modeName: "P02 Stress Incontinence Beginner",
+          desc: "Gentle strengthening for pelvic floor",
+          duration: "20 min",
+          reminder: "07:30 PM",
+          dates: ["2025-12-08", "2025-12-11", "2025-12-15", "2025-12-18", "2025-12-22", "2025-12-25", "2025-12-29"],
+          color: COLORS[1],
+          progress: { done: 4, total: 7 },
+          period: "Dec 08, 2025 - Jan 04, 2026"
+        }
+      ],
+      completedSchedules: [
+        {
+          id: "s3",
+          modeName: "P03 Stress Incontinence Advanced",
+          duration: "20 min",
+          period: "Oct 27, 2025 - Nov 23, 2025",
+          progress: { done: 16, total: 16 }
+        }
+      ],
+      tasks: [
+        { id: "t1", date: "2025-12-08", scheduleId: "s1", modeName: "P01 Urge Incontinence", duration: "30 min", status: "pending", canRest: true, isLastSession: true },
+        { id: "t2", date: "2025-12-08", scheduleId: "s2", modeName: "P02 Stress Incontinence Beginner", duration: "20 min", status: "pending", canRest: true, isLastSession: false },
+        { id: "t3", date: "2025-12-08", scheduleId: "s1", modeName: "P01 Urge Incontinence", duration: "30 min", status: "completed", canRest: false, isLastSession: false },
+        { id: "t4", date: "2025-12-09", scheduleId: "s1", modeName: "P01 Urge Incontinence", duration: "30 min", status: "pending", canRest: true, isLastSession: false },
+        { id: "t5", date: "2025-12-10", scheduleId: "s1", modeName: "P01 Urge Incontinence", duration: "30 min", status: "pending", canRest: true, isLastSession: false },
+        { id: "t6", date: "2025-12-07", scheduleId: "s2", modeName: "P02 Stress Incontinence Beginner", duration: "20 min", status: "missed", canRest: false, isLastSession: false },
+        { id: "t7", date: "2025-12-07", scheduleId: "deleted-1", modeName: "P05 Functional Training", duration: "28 min", status: "archived", canRest: false, isLastSession: false }
+      ]
+    };
+
+    function formatDateLabel(dateStr) {
+      const date = new Date(dateStr + "T00:00:00");
+      const weekday = shortWeekDays[date.getDay()];
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const yyyy = date.getFullYear();
+      return `${weekday} ${mm}-${dd} ${yyyy}`;
+    }
+
+    function formatLongDate(dateStr) {
+      const date = new Date(dateStr + "T00:00:00");
+      const weekday = shortWeekDays[date.getDay()];
+      const month = date.toLocaleString("en-US", { month: "short" });
+      return `${weekday}, ${month} ${date.getDate()}`;
+    }
+
+    function getWeekDates(selectedDate) {
+      const date = new Date(selectedDate + "T00:00:00");
+      const start = new Date(date);
+      start.setDate(date.getDate() - date.getDay());
+      return Array.from({ length: 7 }, (_, index) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + index);
+        return d.toISOString().slice(0, 10);
+      });
+    }
+
+    function shiftDate(dateStr, offsetDays) {
+      const date = new Date(dateStr + "T00:00:00");
+      date.setDate(date.getDate() + offsetDays);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function getMonthDates(startDate, count = 28) {
+      const start = new Date(startDate + "T00:00:00");
+      return Array.from({ length: count }, (_, index) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + index);
+        return d.toISOString().slice(0, 10);
+      });
+    }
+
+    function getFourWeekCalendarDates(anchorDate, count = 28) {
+      const date = new Date(anchorDate + "T00:00:00");
+      const start = new Date(date);
+      start.setDate(date.getDate() - date.getDay());
+      return Array.from({ length: count }, (_, index) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + index);
+        return d.toISOString().slice(0, 10);
+      });
+    }
+
+    function getScheduleColor(scheduleId) {
+      const schedule = appState.activeSchedules.find((item) => item.id === scheduleId);
+      if (schedule) return schedule.color;
+      return "#d0c9cf";
+    }
+
+    function getTasksForDate(dateStr) {
+      const sortMap = { pending: 1, skipped: 2, missed: 3, completed: 4, archived: 5 };
+      return appState.tasks
+        .filter((task) => task.date === dateStr)
+        .sort((a, b) => sortMap[a.status] - sortMap[b.status]);
+    }
+
+    function getPendingTasksForDate(dateStr) {
+      return appState.tasks.filter((task) => task.date === dateStr && task.status === "pending");
+    }
+
+    function summarizeTrainingDays(dates) {
+      const uniqueDays = [...new Set((dates || []).map((dateStr) => shortWeekDays[new Date(dateStr + "T00:00:00").getDay()]))];
+      return uniqueDays.length ? uniqueDays.join(", ") : "No activity day";
+    }
+
+    function renderToast(inline = false) {
+      if (!appState.toast) return "";
+      return `<div class="toast ${appState.toast.type} ${inline ? "inline" : ""}">${appState.toast.text}</div>`;
+    }
+
+    function renderCalendar() {
+      const weekDates = getWeekDates(appState.selectedDate);
+      const selected = appState.selectedDate;
+      return `
+        <div class="calendar-wrap" data-calendar-swipe>
+          <div class="calendar-head">
+            ${weekDays.map((day) => `<div>${day}</div>`).join("")}
+          </div>
+          <div class="calendar-grid" style="margin-top:8px;">
+            ${weekDates.map((dateStr) => {
+              const date = new Date(dateStr + "T00:00:00");
+              const isToday = dateStr === appState.today;
+              const isSelected = dateStr === selected;
+              const isPast = dateStr < appState.today;
+              const dots = appState.tasks
+                .filter((task) => task.date === dateStr)
+                .slice(0, 3)
+                .map((task) => `<span class="dot" style="background:${getScheduleColor(task.scheduleId)}"></span>`)
+                .join("");
+              return `
+                <div class="calendar-day ${isSelected ? "selected" : ""} ${isToday ? "today" : ""} ${isPast ? "past" : ""}" data-date="${dateStr}">
+                  <div class="day-pill">${date.getDate()}</div>
+                  <div class="day-dots">${dots}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTaskCard(task) {
+      const statusBadge = task.status === "pending"
+        ? ""
+        : `<span class="status-badge ${task.status}">${task.status === "archived" ? "(Archived)" : task.status}</span>`;
+
+      const icon = task.status === "completed" ? "✓" : (task.status === "skipped" ? "" : "›");
+      const iconClass = "status-icon";
+      return `
+        <div class="task-card ${task.status}" data-task-id="${task.id}">
+          <span class="task-color" style="background:${getScheduleColor(task.scheduleId)}"></span>
+          <div class="task-meta">
+            <span class="task-title">${task.modeName}</span>
+            <span class="task-sub">${task.duration}</span>
+          </div>
+          <div class="task-trailing">
+            ${statusBadge}
+            ${icon ? `<span class="${iconClass}">${icon}</span>` : ""}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHome({ empty = false } = {}) {
+      const tasks = empty ? [] : getTasksForDate(appState.selectedDate);
+      return `
+        <div class="screen-scroll">
+          <div class="nav">
+            <button class="nav-btn">‹</button>
+            <div class="nav-center">Training schedule</div>
+            <button class="nav-btn" data-nav-go="allSchedules">⌑</button>
+          </div>
+          ${renderCalendar()}
+          ${renderToast(true)}
+          <div class="date-title">${formatDateLabel(appState.selectedDate)}</div>
+          ${tasks.length ? `
+            <div class="task-list">${tasks.map(renderTaskCard).join("")}</div>
+          ` : `
+            <div class="empty">
+              <div class="empty-art"></div>
+              <strong style="font-size:18px;">No schedule yet.</strong>
+              <span style="max-width:230px;font-size:13px;color:#9997a0;line-height:1.6;">Start your first training plan!</span>
+            </div>
+          `}
+          <div class="bottom-cta">
+            <button class="btn-dark" data-nav-go="add">Start A New Schedule</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMonthSelection() {
+      return `
+        <div class="month-week-head">
+          ${shortWeekDays.map((day) => `<span>${day}</span>`).join("")}
+        </div>
+        <div class="month-grid">
+          ${getFourWeekCalendarDates(appState.today).map((dateStr) => {
+            const date = new Date(dateStr + "T00:00:00");
+            const selected = appState.addSelectedDates.has(dateStr);
+            const isPast = dateStr < appState.today;
+            const monthLabel = date.getDate() === 1 ? date.toLocaleString("en-US", { month: "short" }) : "&nbsp;";
+            return `
+              <button class="date-chip ${selected ? "selected" : ""} ${isPast ? "disabled" : ""}" data-pick-date="${dateStr}" ${isPast ? "disabled" : ""}>
+                <small class="${date.getDate() === 1 ? "" : "placeholder"}">${monthLabel}</small>
+                <strong>${date.getDate()}</strong>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function getSelectedMode() {
+      return MODE_OPTIONS.find((option) => option.id === appState.addSelectedMode) || null;
+    }
+
+    function renderAdd({ lockedMode = false } = {}) {
+      const mode = getSelectedMode();
+      const disabled = !appState.addSelectedDates.size || !mode;
+      return `
+        <div class="screen-scroll">
+          <div class="nav">
+            <button class="nav-btn" data-nav-go="${lockedMode ? "allSchedules" : "home"}">‹</button>
+            <div class="nav-center">${lockedMode ? "Edit schedule" : "Add activity"}</div>
+            ${lockedMode ? '<button class="nav-btn text-action" data-action="promptDeleteCurrent">Delete</button>' : '<span style="width:16px;"></span>'}
+          </div>
+
+          <div class="steps">
+            <span class="step active"></span>
+            <span class="step active"></span>
+            <span class="step active"></span>
+          </div>
+
+          <div class="card">
+            <div class="field-group">
+              <span class="field-label">Step 1 · Activity days</span>
+              <span class="field-copy">请选择你计划训练的日期</span>
+              ${renderMonthSelection()}
+            </div>
+
+            <div class="field-group">
+              <span class="field-label">Step 2 · Activity mode</span>
+              <span class="field-copy">Select the mode for this schedule.</span>
+              <div class="select-row ${lockedMode ? "locked" : ""}" ${lockedMode ? "" : 'data-open-overlay="modeSheet"'}>
+                <span class="task-color" style="width:30px;height:30px;min-height:30px;background:${mode ? COLORS[0] : "#f1f1f2"};border-radius:50%;"></span>
+                <div class="select-copy">
+                  ${mode ? `<strong>${mode.name}</strong><span>${mode.desc} · ${mode.duration}</span>` : `<strong>Select mode</strong><span>Mode name + description + fixed duration</span>`}
+                </div>
+                <span class="status-icon">${lockedMode ? "🔒" : "›"}</span>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <span class="field-label">Step 3 · Reminder time</span>
+              <span class="field-copy">滚轮式时间选择器，默认 09:00 AM，可选 "No reminder" 关闭</span>
+              <div class="wheel">
+                <div class="wheel-row">08:30 AM</div>
+                <div class="wheel-row active">${appState.noReminder ? "No reminder" : appState.selectedReminder}</div>
+                <div class="wheel-row">09:30 AM</div>
+              </div>
+              <div class="toggle-row">
+                <span style="font-size:13px;font-weight:700;color:#6f7078;">No reminder</span>
+                <button class="toggle ${appState.noReminder ? "on" : ""}" data-toggle-reminder></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-cta">
+            <button class="btn-dark" ${lockedMode ? 'data-action="saveEdit"' : 'data-nav-go="confirm"'} ${disabled ? "disabled" : ""}>Save And Continue</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function groupDatesByWeek(selectedDates) {
+      const weeks = [[], [], [], []];
+      const monthDates = getFourWeekCalendarDates(appState.today);
+      monthDates.forEach((dateStr, index) => {
+        if (selectedDates.has(dateStr)) {
+          const weekIndex = Math.floor(index / 7);
+          weeks[weekIndex].push(dateStr);
+        }
+      });
+      return weeks;
+    }
+
+    function renderConfirm() {
+      const mode = getSelectedMode();
+      const weeks = groupDatesByWeek(appState.addSelectedDates);
+      return `
+        <div class="screen-scroll">
+          ${renderToast()}
+          <div class="nav">
+            <button class="nav-btn" data-action="backToDraft">‹</button>
+            <div class="nav-center">Your schedule</div>
+            <span style="width:16px;"></span>
+          </div>
+
+          <div class="card">
+            <span class="field-label">Schedule summary</span>
+            <span class="field-copy" style="margin-top:6px;display:block;">${mode ? `${mode.name} · ${mode.duration}` : "—"} · Dec 08, 2025 - Jan 04, 2026</span>
+          </div>
+
+          <div style="margin-top:14px;">
+            ${weeks.map((weekDates, index) => `
+              <div class="week-section">
+                <span class="week-title">Week ${index + 1}</span>
+                ${weekDates.length ? weekDates.map((dateStr) => `
+                  <div class="summary-card">
+                    <span class="task-color" style="width:4px;min-height:34px;background:${COLORS[0]}"></span>
+                    <div class="task-meta">
+                      <span class="task-title">${formatLongDate(dateStr)}</span>
+                      <span class="task-sub">${mode ? `${mode.name} · ${mode.duration}` : "—"}</span>
+                    </div>
+                  </div>
+                `).join("") : `<div class="summary-card"><div class="task-meta"><span class="task-title">No training day</span><span class="task-sub">This week has no selected date.</span></div></div>`}
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="bottom-cta">
+            <button class="btn-dark" data-action="doneSchedule">Done</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAllSchedules() {
+      return `
+        <div class="screen-scroll">
+          ${renderToast()}
+          <div class="nav">
+            <button class="nav-btn" data-nav-go="home">‹</button>
+            <div class="nav-center">All schedules</div>
+            <span style="width:16px;"></span>
+          </div>
+
+          <div class="card">
+            <span class="field-label">Active</span>
+            <div style="margin-top:10px;display:grid;gap:10px;">
+              ${appState.activeSchedules.length ? appState.activeSchedules.map((schedule) => `
+                <div class="summary-card" data-schedule-id="${schedule.id}">
+                  <span class="task-color" style="width:4px;min-height:54px;background:${schedule.color}"></span>
+                  <div class="task-meta">
+                    <span class="task-title">${schedule.modeName}</span>
+                    <span class="task-sub">${schedule.duration} · ${schedule.period}</span>
+                    <span class="task-sub">${summarizeTrainingDays(schedule.dates)} · ${schedule.progress.done}/${schedule.progress.total} sessions completed</span>
+                    <div class="progress"><span style="width:${Math.round((schedule.progress.done / schedule.progress.total) * 100)}%"></span></div>
+                  </div>
+                </div>
+              `).join("") : `<div class="summary-card"><div class="task-meta"><span class="task-title">No active schedule</span><span class="task-sub">Create a new one to start tracking sessions.</span></div></div>`}
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px;">
+            <span class="field-label">Completed</span>
+            <div style="margin-top:10px;display:grid;gap:10px;">
+              ${appState.completedSchedules.map((schedule) => `
+                <div class="summary-card">
+                  <span class="task-color" style="width:4px;min-height:44px;background:#d8d4d7"></span>
+                  <div class="task-meta">
+                    <span class="task-title">${schedule.modeName}</span>
+                    <span class="task-sub">${schedule.duration} · ${schedule.period}</span>
+                    <span class="task-sub">${schedule.progress.done}/${schedule.progress.total} sessions completed</span>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderComplete() {
+      return `
+        <div class="screen-scroll">
+          <div class="celebrate">
+            <div class="celebrate-icon">✦</div>
+            <h2>Congratulations!</h2>
+            <p>You've completed your P01 Urge Incontinence training schedule! 12 sessions in 4 weeks — great dedication!</p>
+            <div class="stats">
+              <div class="stat"><span>Total training</span><strong>12</strong></div>
+              <div class="stat"><span>Skipped</span><strong>1</strong></div>
+              <div class="stat"><span>Completion</span><strong>92%</strong></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px;">
+            <span class="field-label">It's a great time to check your progress.</span>
+            <span class="field-copy" style="margin-top:8px;display:block;">Take a quick assessment to see how you've improved.</span>
+          </div>
+
+          <div class="bottom-cta">
+            <button class="btn-dark" data-nav-go="home">Take an assessment</button>
+            <button class="btn-white" style="margin-top:10px;" data-nav-go="home">Maybe later</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function openOverlay(type, payload = {}) {
+      appState.overlay = { type, ...payload };
+      render();
+    }
+
+    function closeOverlay() {
+      appState.overlay = null;
+      render();
+    }
+
+    function handleDoneSchedule() {
+      const mode = getSelectedMode();
+      const newScheduleId = `s${Date.now()}`;
+      appState.activeSchedules.push({
+        id: newScheduleId,
+        modeId: mode.id,
+        modeName: mode.name,
+        desc: mode.desc,
+        duration: mode.duration,
+        reminder: appState.noReminder ? "No reminder" : appState.selectedReminder,
+        dates: [...appState.addSelectedDates],
+        color: COLORS[appState.activeSchedules.length % COLORS.length],
+        progress: { done: 0, total: appState.addSelectedDates.size },
+        period: "Dec 08, 2025 - Jan 04, 2026"
+      });
+
+      [...appState.addSelectedDates].forEach((dateStr) => {
+        appState.tasks.push({
+          id: `task-${Math.random().toString(36).slice(2, 8)}`,
+          date: dateStr,
+          scheduleId: newScheduleId,
+          modeName: mode.name,
+          duration: mode.duration,
+          status: dateStr < appState.today ? "missed" : "pending",
+          canRest: true,
+          isLastSession: false
+        });
+      });
+
+      appState.toast = { type: "pink", text: "Your schedule has been created" };
+      appState.view = "home";
+      appState.selectedDate = appState.today;
+      render();
+      clearToast();
+    }
+
+    function prepareAddFlow() {
+      appState.editScheduleId = null;
+      appState.addSelectedDates = new Set();
+      appState.addSelectedMode = null;
+      appState.noReminder = false;
+      appState.selectedReminder = "09:00 AM";
+      appState.view = "add";
+    }
+
+    function ensureDemoDraft() {
+      if (appState.addSelectedDates.size && appState.addSelectedMode) return;
+      appState.addSelectedDates = new Set(["2025-12-08", "2025-12-10", "2025-12-12", "2025-12-15", "2025-12-17", "2025-12-19"]);
+      appState.addSelectedMode = "p01";
+      appState.noReminder = false;
+      appState.selectedReminder = "09:00 AM";
+    }
+
+    function openEdit(scheduleId) {
+      const schedule = appState.activeSchedules.find((item) => item.id === scheduleId);
+      if (!schedule) return;
+      appState.editScheduleId = scheduleId;
+      appState.addSelectedDates = new Set(schedule.dates || []);
+      appState.addSelectedMode = schedule.modeId;
+      appState.noReminder = schedule.reminder === "No reminder";
+      appState.selectedReminder = schedule.reminder === "No reminder" ? "09:00 AM" : schedule.reminder;
+      appState.view = "edit";
+      render();
+    }
+
+    function saveEdit() {
+      const schedule = appState.activeSchedules.find((item) => item.id === appState.editScheduleId);
+      if (!schedule) return;
+      schedule.dates = [...appState.addSelectedDates];
+      schedule.reminder = appState.noReminder ? "No reminder" : appState.selectedReminder;
+      schedule.progress.total = Math.max(schedule.progress.done, schedule.dates.length || schedule.progress.total);
+
+      appState.tasks = appState.tasks.filter((task) => {
+        if (task.scheduleId !== schedule.id) return true;
+        return task.date < appState.today || task.status === "completed" || task.status === "missed" || task.status === "archived";
+      });
+
+      schedule.dates.forEach((dateStr, index) => {
+        if (dateStr < appState.today) return;
+        const exists = appState.tasks.some((task) => task.scheduleId === schedule.id && task.date === dateStr && task.status !== "archived");
+        if (!exists) {
+          appState.tasks.push({
+            id: `edit-${schedule.id}-${index}-${Math.random().toString(36).slice(2, 6)}`,
+            date: dateStr,
+            scheduleId: schedule.id,
+            modeName: schedule.modeName,
+            duration: schedule.duration,
+            status: "pending",
+            canRest: true,
+            isLastSession: false
+          });
+        }
+      });
+
+      appState.toast = { type: "pink", text: "Your schedule has been updated" };
+      appState.editScheduleId = null;
+      appState.view = "home";
+      appState.selectedDate = appState.today;
+      render();
+      clearToast();
+    }
+
+    function clearToast() {
+      window.clearTimeout(clearToast.timer);
+      clearToast.timer = window.setTimeout(() => {
+        appState.toast = null;
+        render();
+      }, 2200);
+    }
+
+    function getTaskById(id) {
+      return appState.tasks.find((task) => task.id === id);
+    }
+
+    function handleRestClick(taskId) {
+      const task = getTaskById(taskId);
+      appState.selectedTaskId = taskId;
+      appState.holdAction = null;
+      if (appState.skipStreak[task.scheduleId] >= 3) {
+        openOverlay("encourage");
+      } else {
+        openOverlay("restConfirm", { taskId });
+      }
+    }
+
+    function handleSkip() {
+      const task = getTaskById(appState.selectedTaskId);
+      const pendingTasks = getPendingTasksForDate(task.date);
+      if (task.date === appState.today && pendingTasks.length > 1) {
+        openOverlay("skipScope", { taskId: task.id });
+        return;
+      }
+      task.status = "skipped";
+      appState.skipStreak[task.scheduleId] = (appState.skipStreak[task.scheduleId] || 0) + 1;
+      appState.overlay = null;
+      render();
+    }
+
+    function applySkipScope(scope) {
+      const task = getTaskById(appState.selectedTaskId);
+      if (scope === "all") {
+        const affectedScheduleIds = new Set();
+        appState.tasks.forEach((item) => {
+          if (item.date === task.date && item.status === "pending") {
+            item.status = "skipped";
+            affectedScheduleIds.add(item.scheduleId);
+          }
+        });
+        affectedScheduleIds.forEach((scheduleId) => {
+          appState.skipStreak[scheduleId] = (appState.skipStreak[scheduleId] || 0) + 1;
+        });
+      } else {
+        task.status = "skipped";
+        appState.skipStreak[task.scheduleId] = (appState.skipStreak[task.scheduleId] || 0) + 1;
+      }
+      appState.overlay = null;
+      render();
+    }
+
+    function openRestFromReminder(taskId = "t1") {
+      appState.selectedTaskId = taskId;
+      const task = getTaskById(taskId);
+      if (!task) return;
+      if ((appState.skipStreak[task.scheduleId] || 0) >= 3) {
+        openOverlay("encourage");
+        return;
+      }
+      openOverlay("restConfirm", { taskId });
+    }
+
+    function restoreTask(taskId) {
+      const task = getTaskById(taskId);
+      task.status = "pending";
+      appState.skipStreak[task.scheduleId] = Math.max((appState.skipStreak[task.scheduleId] || 1) - 1, 0);
+      appState.toast = { type: "green", text: "Training restored" };
+      appState.overlay = null;
+      render();
+      clearToast();
+    }
+
+    function deleteSchedule(scheduleId) {
+      appState.activeSchedules = appState.activeSchedules.filter((schedule) => schedule.id !== scheduleId);
+      appState.tasks = appState.tasks.filter((task) => {
+        if (task.scheduleId !== scheduleId) return true;
+        if (task.status === "completed") {
+          task.status = "archived";
+          task.scheduleId = `archived-${scheduleId}`;
+          return true;
+        }
+        return task.date < appState.today;
+      });
+      appState.toast = { type: "pink", text: "Schedule deleted" };
+      appState.overlay = null;
+      appState.editScheduleId = null;
+      appState.view = appState.activeSchedules.length ? "allSchedules" : "home";
+      render();
+      clearToast();
+    }
+
+    function openSkipFlowFromEncourage() {
+      const taskId = appState.selectedTaskId || "t1";
+      const task = getTaskById(taskId);
+      if (!task) return;
+      const pendingTasks = getPendingTasksForDate(task.date);
+      if (task.date === appState.today && pendingTasks.length > 1) {
+        openOverlay("skipScope", { taskId });
+        return;
+      }
+      openOverlay("restConfirm", { taskId });
+    }
+
+    function renderOverlay() {
+      if (!appState.overlay) return "";
+      const overlay = appState.overlay;
+
+      if (overlay.type === "modeSheet") {
+        return `
+          <div class="overlay">
+            <div class="sheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-title">Mode</div>
+              <div class="stack" style="margin-top:0;">
+                ${MODE_OPTIONS.map((option) => `
+                  <button class="mode-option ${appState.addSelectedMode === option.id ? "active" : ""}" data-select-mode="${option.id}">
+                    <span class="task-color" style="width:30px;height:30px;min-height:30px;background:${appState.addSelectedMode === option.id ? COLORS[0] : "#f1f1f2"};border-radius:50%;"></span>
+                    <div class="select-copy">
+                      <strong>${option.name}</strong>
+                      <span>${option.desc} · ${option.duration}</span>
+                    </div>
+                    ${appState.addSelectedMode === option.id ? `<span class="status-badge">✓</span>` : ""}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "reminder") {
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">⏰</div>
+              <h3>Time to train!</h3>
+              <p>Your scheduled training is ready. Let's keep the momentum going!</p>
+              <div class="stack">
+                <button class="btn-pink" data-close-overlay>Start Training</button>
+                <button class="btn-white" data-action="restFromReminder">Rest today</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "encourage") {
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">♡</div>
+              <h3>We miss you!</h3>
+              <p>You've taken a break for 3 days in a row. Consistency is key to seeing results — even a short session can make a difference.</p>
+              <div class="stack">
+                <button class="btn-pink" data-close-overlay>Let's train</button>
+                <button class="btn-white" data-action="restAfterEncourage">I still need rest</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "restConfirm") {
+        const task = getTaskById(overlay.taskId || appState.selectedTaskId);
+        const title = task.date === appState.today ? "Take a rest today?" : `Rest on ${formatLongDate(task.date)}?`;
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">☾</div>
+              <h3>${title}</h3>
+              <p>This training will be marked as skipped and won't count toward your progress.</p>
+              <div class="stack">
+                <button class="btn-pink" data-confirm-skip>Skip</button>
+                <button class="btn-white" data-close-overlay>Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "skipScope") {
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">⋯</div>
+              <h3>What would you like to skip?</h3>
+              <p>You have ${getPendingTasksForDate(appState.today).length} training sessions scheduled for today.</p>
+              <div class="stack">
+                <button class="btn-pink" data-skip-scope="one">Skip this session</button>
+                <button class="btn-white" data-skip-scope="all">Skip all today's sessions</button>
+                <button class="btn-white" data-close-overlay>Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "restoreToday") {
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon green">↻</div>
+              <h3>Resume this training?</h3>
+              <p>This session will be restored and you can start training right away.</p>
+              <div class="stack">
+                <button class="btn-green" data-restore-task="${overlay.taskId}">Resume training</button>
+                <button class="btn-white" data-close-overlay>Keep skipped</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "restoreFuture") {
+        const task = getTaskById(overlay.taskId);
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon green">⌘</div>
+              <h3>Restore training on<br>${formatLongDate(task.date)}?</h3>
+              <p>This training day will be added back to your schedule.</p>
+              <div class="stack">
+                <button class="btn-green" data-restore-task="${overlay.taskId}">Restore</button>
+                <button class="btn-white" data-close-overlay>Keep skipped</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "deleteConfirm") {
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">−</div>
+              <h3>Delete this schedule?</h3>
+              <p>Future training sessions will be removed. Your completed sessions will still be visible in the calendar.</p>
+              <div class="stack">
+                <button class="btn-pink" data-delete-schedule="${overlay.scheduleId}">Delete</button>
+                <button class="btn-white" data-close-overlay>Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (overlay.type === "lastSession") {
+        const task = getTaskById(overlay.taskId || appState.selectedTaskId || "t1");
+        return `
+          <div class="overlay center">
+            <div class="dialog">
+              <div class="dialog-icon">✓</div>
+              <h3>This is your last session!</h3>
+              <p>You've almost completed your ${task.modeName} schedule. Would you like to continue for another month?</p>
+              <div class="stack">
+                <button class="btn-pink" data-action="continueMonth">Continue for another month</button>
+                <button class="btn-white" data-nav-go="complete">Finish after this session</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return "";
+    }
+
+    function renderView() {
+      switch (appState.view) {
+        case "add":
+          return renderAdd();
+        case "confirm":
+          return renderConfirm();
+        case "allSchedules":
+          return renderAllSchedules();
+        case "edit":
+          return renderAdd({ lockedMode: true });
+        case "complete":
+          return renderComplete();
+        case "homeEmpty":
+          return renderHome({ empty: true });
+        default:
+          return renderHome();
+      }
+    }
+
+    function render() {
+      appScreen.innerHTML = `${renderView()}${renderOverlay()}`;
+      syncNav();
+      bindDynamicEvents();
+    }
+
+    function syncNav() {
+      navButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.nav === appState.view || (appState.view === "homeEmpty" && button.dataset.nav === "home"));
+      });
+      const labels = {
+        home: "Training schedule",
+        add: "Add activity",
+        confirm: "Your schedule",
+        allSchedules: "All schedules",
+        edit: "Edit schedule",
+        complete: "Completion",
+        homeEmpty: "Empty state"
+      };
+      caption.textContent = `当前页面：${labels[appState.view] || "Training schedule"}。长按 Pending 任务卡片 0.5 秒会直接进入休息弹窗；All Schedules 点击卡片进入编辑，删除入口在编辑页右上角。`;
+    }
+
+    function bindDynamicEvents() {
+      appScreen.querySelectorAll("[data-date]").forEach((node) => {
+        node.addEventListener("click", () => {
+          if (Date.now() - appState.justSwipedWeekAt < 220) return;
+          appState.selectedDate = node.dataset.date;
+          appState.holdAction = null;
+          render();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-calendar-swipe]").forEach((node) => {
+        let startX = 0;
+        let startY = 0;
+        let pointerActive = false;
+
+        node.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          startX = event.clientX;
+          startY = event.clientY;
+          pointerActive = true;
+        });
+
+        node.addEventListener("pointerup", (event) => {
+          if (!pointerActive) return;
+          pointerActive = false;
+          const dx = event.clientX - startX;
+          const dy = event.clientY - startY;
+          if (Math.abs(dx) < 42 || Math.abs(dx) <= Math.abs(dy)) return;
+          appState.justSwipedWeekAt = Date.now();
+          appState.selectedDate = shiftDate(appState.selectedDate, dx < 0 ? 7 : -7);
+          appState.holdAction = null;
+          render();
+        });
+
+        node.addEventListener("pointercancel", () => {
+          pointerActive = false;
+        });
+      });
+
+      appScreen.querySelectorAll("[data-pick-date]").forEach((node) => {
+        node.addEventListener("click", () => {
+          const date = node.dataset.pickDate;
+          if (appState.addSelectedDates.has(date)) {
+            appState.addSelectedDates.delete(date);
+          } else {
+            appState.addSelectedDates.add(date);
+          }
+          render();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-open-overlay]").forEach((node) => {
+        node.addEventListener("click", () => openOverlay(node.dataset.openOverlay));
+      });
+
+      appScreen.querySelectorAll("[data-select-mode]").forEach((node) => {
+        node.addEventListener("click", () => {
+          appState.addSelectedMode = node.dataset.selectMode;
+          closeOverlay();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-toggle-reminder]").forEach((node) => {
+        node.addEventListener("click", () => {
+          appState.noReminder = !appState.noReminder;
+          render();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-nav-go]").forEach((node) => {
+        node.addEventListener("click", () => {
+          appState.overlay = null;
+          appState.holdAction = null;
+          if (node.dataset.navGo === "add") {
+            prepareAddFlow();
+            render();
+            return;
+          }
+          appState.view = node.dataset.navGo;
+          render();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-action='doneSchedule']").forEach((node) => {
+        node.addEventListener("click", handleDoneSchedule);
+      });
+
+      appScreen.querySelectorAll("[data-action='saveEdit']").forEach((node) => {
+        node.addEventListener("click", saveEdit);
+      });
+
+      appScreen.querySelectorAll("[data-action='promptDeleteCurrent']").forEach((node) => {
+        node.addEventListener("click", () => {
+          if (!appState.editScheduleId) return;
+          openOverlay("deleteConfirm", { scheduleId: appState.editScheduleId });
+        });
+      });
+
+      appScreen.querySelectorAll("[data-action='backToDraft']").forEach((node) => {
+        node.addEventListener("click", () => {
+          appState.view = "add";
+          render();
+        });
+      });
+
+      appScreen.querySelectorAll("[data-close-overlay]").forEach((node) => {
+        node.addEventListener("click", closeOverlay);
+      });
+
+      appScreen.querySelectorAll("[data-open-encourage]").forEach((node) => {
+        node.addEventListener("click", () => openOverlay("encourage"));
+      });
+
+      appScreen.querySelectorAll("[data-action='restFromReminder']").forEach((node) => {
+        node.addEventListener("click", () => openRestFromReminder(appState.selectedTaskId || "t1"));
+      });
+
+      appScreen.querySelectorAll("[data-action='restAfterEncourage']").forEach((node) => {
+        node.addEventListener("click", openSkipFlowFromEncourage);
+      });
+
+      appScreen.querySelectorAll("[data-confirm-skip]").forEach((node) => {
+        node.addEventListener("click", handleSkip);
+      });
+
+      appScreen.querySelectorAll("[data-skip-scope]").forEach((node) => {
+        node.addEventListener("click", () => applySkipScope(node.dataset.skipScope === "all" ? "all" : "one"));
+      });
+
+      appScreen.querySelectorAll("[data-restore-task]").forEach((node) => {
+        node.addEventListener("click", () => restoreTask(node.dataset.restoreTask));
+      });
+
+      appScreen.querySelectorAll("[data-delete-schedule]").forEach((node) => {
+        node.addEventListener("click", () => deleteSchedule(node.dataset.deleteSchedule));
+      });
+
+      appScreen.querySelectorAll("[data-action='continueMonth']").forEach((node) => {
+        node.addEventListener("click", () => {
+          appState.toast = { type: "yellow", text: "Schedule extended for another month" };
+          appState.overlay = null;
+          appState.view = "home";
+          render();
+          clearToast();
+        });
+      });
+
+      let holdTimer = null;
+      let holdTriggered = false;
+      const holdStart = (taskId) => {
+        holdTriggered = false;
+        window.clearTimeout(holdTimer);
+        holdTimer = window.setTimeout(() => {
+          holdTriggered = true;
+          handleRestClick(taskId);
+        }, 500);
+      };
+      const holdEnd = () => window.clearTimeout(holdTimer);
+
+      appScreen.querySelectorAll(".task-card.pending").forEach((node) => {
+        const taskId = node.dataset.taskId;
+        node.addEventListener("mousedown", () => holdStart(taskId));
+        node.addEventListener("touchstart", () => holdStart(taskId), { passive: true });
+        node.addEventListener("mouseup", holdEnd);
+        node.addEventListener("mouseleave", holdEnd);
+        node.addEventListener("touchend", holdEnd);
+        node.addEventListener("touchcancel", holdEnd);
+        node.addEventListener("click", () => {
+          if (holdTriggered) {
+            holdTriggered = false;
+            return;
+          }
+          const task = getTaskById(taskId);
+          if (task && task.isLastSession) {
+            appState.selectedTaskId = taskId;
+            openOverlay("lastSession", { taskId });
+          }
+        });
+      });
+
+      appScreen.querySelectorAll(".summary-card[data-schedule-id]").forEach((node) => {
+        const scheduleId = node.dataset.scheduleId;
+        node.addEventListener("click", () => openEdit(scheduleId));
+      });
+
+      appScreen.querySelectorAll(".task-card.skipped").forEach((node) => {
+        const taskId = node.dataset.taskId;
+        node.addEventListener("click", () => {
+          const task = getTaskById(taskId);
+          openOverlay(task.date === appState.today ? "restoreToday" : "restoreFuture", { taskId });
+        });
+      });
+    }
+
+    document.querySelectorAll("[data-nav]").forEach((button) => {
+      button.addEventListener("click", () => {
+        appState.overlay = null;
+        appState.holdAction = null;
+        if (button.dataset.nav === "add") {
+          prepareAddFlow();
+          render();
+          return;
+        }
+        if (button.dataset.nav === "confirm") {
+          ensureDemoDraft();
+        }
+        if (button.dataset.nav === "edit") {
+          openEdit("s1");
+          return;
+        }
+        appState.view = button.dataset.nav;
+        render();
+      });
+    });
+
+    document.querySelectorAll("[data-scene]").forEach((button) => {
+      button.addEventListener("click", () => {
+        appState.overlay = null;
+        appState.holdAction = null;
+        if (button.dataset.scene === "reminder") {
+          appState.view = "home";
+          openOverlay("reminder");
+          return;
+        }
+        if (button.dataset.scene === "encourage") {
+          appState.view = "home";
+          appState.selectedTaskId = "t1";
+          openOverlay("encourage");
+          return;
+        }
+        if (button.dataset.scene === "lastSession") {
+          appState.view = "home";
+          appState.selectedTaskId = "t1";
+          openOverlay("lastSession", { taskId: "t1" });
+          return;
+        }
+        if (button.dataset.scene === "empty") {
+          appState.view = "homeEmpty";
+          render();
+        }
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
