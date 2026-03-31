@@ -1101,8 +1101,8 @@
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <div class="eyebrow">Updated Spec</div>
-      <h1>Training Schedule</h1>
+      <div class="eyebrow">PRD 对齐</div>
+      <h1>训练日程管理</h1>
       <p>这版按你最新给出的训练日程管理说明重做：4 周完整日期选择、多任务跳过范围、撤销请假、编辑与删除、续期与完成引导都按新内容执行，旧稿里的 Reschedule / Rest Day 逻辑已移除。</p>
 
       <div class="chip-row">
@@ -1116,24 +1116,24 @@
 
       <h2>页面导航</h2>
       <div class="nav-list" id="nav-list">
-        <button class="nav-button active" data-nav="home">Training schedule</button>
-        <button class="nav-button" data-nav="add">Add activity</button>
-        <button class="nav-button" data-nav="confirm">Your schedule</button>
-        <button class="nav-button" data-nav="allSchedules">All Schedules</button>
-        <button class="nav-button" data-nav="edit">Edit schedule</button>
-        <button class="nav-button" data-nav="complete">Completion</button>
+        <button class="nav-button active" data-nav="home">日程主页</button>
+        <button class="nav-button" data-nav="add">创建日程</button>
+        <button class="nav-button" data-nav="confirm">日程确认页</button>
+        <button class="nav-button" data-nav="allSchedules">日程汇总</button>
+        <button class="nav-button" data-nav="edit">编辑日程</button>
+        <button class="nav-button" data-nav="complete">完成鼓励页</button>
       </div>
 
       <h2>快捷场景</h2>
       <div class="nav-list">
-        <button class="nav-button" data-scene="reminder">Reminder popup</button>
-        <button class="nav-button" data-scene="encourage">We miss you</button>
-        <button class="nav-button" data-scene="lastSession">Last session</button>
-        <button class="nav-button" data-scene="empty">Empty state</button>
+        <button class="nav-button" data-scene="reminder">训练提醒弹窗</button>
+        <button class="nav-button" data-scene="encourage">连续请假提醒</button>
+        <button class="nav-button" data-scene="lastSession">续期提醒弹窗</button>
+        <button class="nav-button" data-scene="empty">空状态</button>
       </div>
 
       <div class="caption" id="caption">
-        当前页面：Training schedule。长按 `Pending` 任务卡片 0.5 秒会出现 `Rest` 浮层按钮；All Schedules 点击卡片进入编辑，删除入口在编辑页右上角。
+        当前页面：日程主页。长按 `待完成` 任务卡片 0.5 秒会直接进入请假确认弹窗；日程汇总页点击卡片进入编辑日程，删除入口在编辑日程页右上角。
       </div>
     </aside>
 
@@ -2020,15 +2020,15 @@
         button.classList.toggle("active", button.dataset.nav === appState.view || (appState.view === "homeEmpty" && button.dataset.nav === "home"));
       });
       const labels = {
-        home: "Training schedule",
-        add: "Add activity",
-        confirm: "Your schedule",
-        allSchedules: "All schedules",
-        edit: "Edit schedule",
-        complete: "Completion",
-        homeEmpty: "Empty state"
+        home: "日程主页",
+        add: "创建日程",
+        confirm: "日程确认页",
+        allSchedules: "日程汇总",
+        edit: "编辑日程",
+        complete: "完成鼓励页",
+        homeEmpty: "空状态"
       };
-      caption.textContent = `当前页面：${labels[appState.view] || "Training schedule"}。长按 Pending 任务卡片 0.5 秒会直接进入休息弹窗；All Schedules 点击卡片进入编辑，删除入口在编辑页右上角。`;
+      caption.textContent = `当前页面：${labels[appState.view] || "日程主页"}。长按待完成任务卡片 0.5 秒会直接进入请假确认弹窗；日程汇总页点击卡片进入编辑日程，删除入口在编辑日程页右上角。`;
     }
 
     function bindDynamicEvents() {
